@@ -94,8 +94,22 @@ class Blockchain {
    * The method return a Promise that will resolve with the message to be signed
    * @param {*} address
    */
+  //bitcoinjs-lib and bitcoinjs-message will help us verify wallet address ownership and signatures.
+  //Note: Make sure to always use Legacy Wallet addresses.
+
   requestMessageOwnershipVerification(address) {
-    return new Promise(resolve => {});
+    return new Promise(resolve => {
+      //<WALLET_ADDRESS>:${new Date().getTime().toString().slice(0,-3)}:starRegistry
+
+      //You will need to replace <WALLET_ADDRESS> with the wallet address submitted by the requestor
+      //and the time in your message will allow you to validate the 5 minutes time window.
+      resolve(
+        `${address}:${new Date()
+          .getTime()
+          .toString()
+          .slice(0, -3)}:starRegistry`
+      );
+    });
   }
 
   /**
@@ -117,7 +131,29 @@ class Blockchain {
    */
   submitStar(address, message, signature, star) {
     let self = this;
-    return new Promise(async (resolve, reject) => {});
+    return new Promise(async (resolve, reject) => {
+      let time = parseInt(message.split(":")[1]);
+      let currentTime = parseInt(
+        new Date()
+          .getTime()
+          .toString()
+          .slice(0, -3)
+      );
+
+      if (currentTime - time > 5 * 60) {
+        let verifiedMessage = bitcoinMessage.verify(
+          message,
+          address,
+          signature
+        );
+        //* 5. Create the block and add it to the chain
+        newBlock = new Block(verifiedMessage);
+        _addBlock(newBlock);
+        resolve(newBlock);
+      } else {
+        reject("Error");
+      }
+    });
   }
 
   /**
@@ -128,7 +164,14 @@ class Blockchain {
    */
   getBlockByHash(hash) {
     let self = this;
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      block = this.chain.filter(block => block.hash == hash);
+      if (block) {
+        resolve(block);
+      } else {
+        reject("Error cannot find block with specified hash");
+      }
+    });
   }
 
   /**
@@ -157,7 +200,18 @@ class Blockchain {
   getStarsByWalletAddress(address) {
     let self = this;
     let stars = [];
-    return new Promise((resolve, reject) => {});
+    stars = self.chain.filter(block => {
+      let dataMessage = getBData();
+      let blockAddress = dataMessage.split(":")[0];
+      if (blockAddress == address) return dataMessage.split(":")[2];
+    });
+    return new Promise((resolve, reject) => {
+      if (stars.length > 0) {
+        resolve(stars);
+      } else {
+        reject("Error no stars");
+      }
+    });
   }
 
   /**
@@ -169,7 +223,30 @@ class Blockchain {
   validateChain() {
     let self = this;
     let errorLog = [];
-    return new Promise(async (resolve, reject) => {});
+    return new Promise(async (resolve, reject) => {
+      //this.chain.
+      for (i = 0; i < this.chain.length - 1; i++) {
+        if (i == 0) {
+          errorLog.push("Genesis Block does not validate");
+        } else {
+          thisBlock = this.chain[i];
+          thisBlockHash = thisBlock.hash;
+          thisBockPrevious = thisBlock.previousBlockHash;
+          if (!thisBlock.validate()) {
+            errorLog.push("invalid block @ " + thisBlock.height);
+          }
+          if (!thisBlock.previousBlockHash != this.chain[i - 1].hash) {
+            errLog.push("invalid previousBlockHash @ " + thisBlock.height);
+          }
+        }
+      }
+
+      if (errorLog) {
+        resolve(errLog);
+      } else {
+        reject("error validating ", errLog);
+      }
+    });
   }
 }
 
