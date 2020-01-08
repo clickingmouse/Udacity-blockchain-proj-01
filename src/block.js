@@ -36,18 +36,33 @@ class Block {
    */
   validate() {
     let self = this;
+    //console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>validating ...");
+    //console.log(self);
     return new Promise((resolve, reject) => {
       // Save in auxiliary variable the current block hash
 
       var auxHash = this.hash;
       // Recalculate the hash of the Block
+      self.hash = null;
       var recalculatedHash = SHA256(JSON.stringify(self).toString());
       // Comparing if the hashes changed
+      console.log(
+        "comparing block[" +
+          self.height +
+          "]" +
+          auxHash +
+          " VS " +
+          recalculatedHash
+      );
+      this.hash = auxHash;
+
       if (auxHash != recalculatedHash) {
+        console.log("block is not valid");
         // Returning the Block is not valid
-        reject(false);
+        resolve(false);
       } else {
         // Returning the Block is valid
+        console.log("block is valid");
         resolve(true);
       }
     });

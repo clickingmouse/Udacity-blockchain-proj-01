@@ -284,26 +284,39 @@ class Blockchain {
     let errorLog = [];
     return new Promise(async (resolve, reject) => {
       //this.chain.
-      for (i = 0; i < this.chain.length - 1; i++) {
-        if (i == 0) {
-          errorLog.push("Genesis Block does not validate");
-        } else {
-          thisBlock = this.chain[i];
-          thisBlockHash = thisBlock.hash;
-          thisBockPrevious = thisBlock.previousBlockHash;
-          if (!thisBlock.validate()) {
-            errorLog.push("invalid block @ " + thisBlock.height);
-          }
-          if (!thisBlock.previousBlockHash != this.chain[i - 1].hash) {
-            errLog.push("invalid previousBlockHash @ " + thisBlock.height);
+      for (let i = 0; i < this.chain.length; i++) {
+        const thisBlock = this.chain[i];
+        const thisBlockHash = thisBlock.hash;
+        const thisBlockPrevious = thisBlock.previousBlockHash;
+        console.log("validating block[" + i + "]");
+        if ((await thisBlock.validate()) == false) {
+          console.log("found invalid block @" + thisBlock.height);
+          errorLog.push("invalid block @ " + thisBlock.height);
+        }
+        if (i > 0) {
+          //console.log("pushing Genesis@ i=" + i);
+          //errorLog.push("Genesis Block does not validate");
+          const aBlock = this.chain[i];
+          const prevBlock = this.chain[i - 1];
+          //          console.log(prevBlock);
+          //          console.log(prevBlock.hash);
+          //          console.log("comparing @ " +i +": " +thisBlock.previousBlockHash +" VSV " + this.chain[i - 1].hash);
+          if (thisBlock.previousBlockHash != this.chain[i - 1].hash) {
+            errorLog.push(
+              "previousBlockHash value MISMATCH in Block[" +
+                thisBlock.height +
+                "]@index" +
+                i
+            );
           }
         }
       }
 
       if (errorLog) {
-        resolve(errLog);
+        resolve(errorLog);
       } else {
-        reject("error validating ", errLog);
+        //console.log("REJECT");
+        reject("error validating ", errorLog);
       }
     });
   }
