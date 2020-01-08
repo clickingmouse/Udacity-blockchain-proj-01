@@ -64,17 +64,27 @@ class Block {
    */
   getBData() {
     // Getting the encoded data saved in the Block
-    let encodedData = this.data;
+    let encodedData = this.body;
+    console.log("encoded data :" + encodedData);
     // Decoding the data to retrieve the JSON representation of the object
     let decodedData = hex2ascii(encodedData);
+    console.log("decoded data :" + decodedData);
+
     // Parse the data to an object to be retrieve.
     let obj = JSON.parse(decodedData);
+    console.log("obj>>>>" + obj);
+
     // Resolve with the data if the object isn't the Genesis block
+    //if (obj) {
     if (this.height > 0) {
-      resolve(obj);
-    } else {
-      reject("Error");
-    }
+      console.log("returning:<" + typeof obj + ">" + obj.data);
+      console.log(obj.data);
+
+      return obj.data;
+    } //else {
+    //return -1
+    //   reject("Error");
+    //}
   }
 }
 

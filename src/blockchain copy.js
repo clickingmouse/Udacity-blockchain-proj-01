@@ -158,8 +158,8 @@ class Blockchain {
         );
         let newMessage = message.split(":");
 
-        newMessage[2] = JSON.stringify(star);
-        //newMessage[2] = star;
+        //newMessage[2] = JSON.stringify(star);
+        newMessage[2] = star;
 
         newMessage = newMessage.join(":");
         console.log("newMessage---------------->" + newMessage);
@@ -228,39 +228,35 @@ class Blockchain {
       console.log("============================================== ");
       console.log("searching for" + address);
       //stars = self.chain.map(el=>{  })
-      stars = self.chain
-        .filter(block => {
-          if (block.height > 0) {
-            let dataMessage = block.getBData();
-            let blockAddress = dataMessage.split(":")[0];
-            if (blockAddress == address) {
-              return dataMessage.split(":")[2];
-            }
+      stars = self.chain.filter(block => {
+        console.log("---------------------------------");
+        console.log(block);
+        console.log("---------------------------------");
+        console.log("byWallet::" + JSON.stringify(block));
+        if (block.height > 0) {
+          let dataMessage = block.getBData();
+          console.log(
+            "got block.dataMessage--->(" +
+              typeof dataMessage +
+              ")" +
+              dataMessage
+          );
+          let blockAddress = dataMessage.split(":")[0];
+          console.log(dataMessage.split(":")[0]);
+          console.log("blockAddress is:" + blockAddress);
+          if (blockAddress == address) {
+            console.log("WALLET ADDRESS MATCH");
+            console.log(dataMessage.split(":")[2]);
+            let x = dataMessage.split(":")[2];
+            console.log(x);
+            //console.log(JSON.stringify(dataMessage.split(":")[2]));
+            //console.log(JSON.parse(dataMessage.split(":")[2]));
+            //stars.push(
+            return dataMessage.split(":")[2];
+            //console.log("...." + stars);
           }
-        })
-        .map(block => {
-          if (block.height > 0) {
-            let dataMessage = block.getBData();
-            let blockAddress = dataMessage.split(":")[0];
-            if (blockAddress == address) {
-              console.log("==>>" + typeof dataMessage);
-              //console.log(JSON.stringify(dataMessage.split(":")[2]));
-              var dMessage = dataMessage.split(":");
-              dMessage.shift();
-              dMessage.shift();
-
-              //   console.log(dMessage);
-              //   var a = dMessage.shift();
-              //   console.log(a);
-              //   var b = a.shift();
-              //   console.log(b);
-              var parsedMessage = dMessage.join(":");
-
-              console.log(JSON.parse(parsedMessage));
-              return JSON.parse(parsedMessage);
-            }
-          }
-        });
+        }
+      });
 
       console.log(stars);
       if (stars.length > 0) {
