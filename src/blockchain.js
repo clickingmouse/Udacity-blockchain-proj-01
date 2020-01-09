@@ -150,7 +150,9 @@ class Blockchain {
           "|signature:" +
           signature
       );
-      if (currentTime - time < 5000 * 60) {
+      //      if (currentTime - time < 5000 * 60) {
+
+      if (currentTime - time < 5 * 60) {
         let verifiedMessage = bitcoinMessage.verify(
           message,
           address,
