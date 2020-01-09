@@ -5,6 +5,8 @@ bc._addBlock(new BlockClass.Block("test data 2"));
 bc._addBlock(new BlockClass.Block("test data 3"));
 bc._addBlock(new BlockClass.Block("test data 4"));
 
+bc.validateChain().then(value => console.log(value));
+
 // induces invald blocks
 function tamperBlock(height) {
   bc.chain[height].body = "induced error";

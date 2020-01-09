@@ -87,15 +87,16 @@ class Block {
 
     // Parse the data to an object to be retrieve.
     let obj = JSON.parse(decodedData);
-    console.log("obj>>>>" + obj);
+    console.log("obj>>>>");
+    console.log(obj);
 
     // Resolve with the data if the object isn't the Genesis block
     //if (obj) {
     if (this.height > 0) {
-      console.log("returning:<" + typeof obj + ">" + obj.data);
-      console.log(obj.data);
+      console.log("returning:<" + typeof obj + ">" + obj);
+      console.log("getBData::" + obj);
 
-      return obj.data;
+      return obj;
     } //else {
     //return -1
     //   reject("Error");

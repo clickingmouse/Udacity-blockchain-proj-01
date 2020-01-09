@@ -226,26 +226,46 @@ class Blockchain {
     let self = this;
     let stars = [];
     return new Promise((resolve, reject) => {
-      //console.log("============================================== ");
-      //console.log("searching for" + address);
+      console.log("============================================== ");
+      console.log("searching for" + address);
       //stars = self.chain.map(el=>{  })
-      //stars =
-      self.chain.forEach(block => {
-        if (block.height > 0) {
-          let bData = block.getBData();
-          //console.log("owner :" + address + "|VS|" + bData.owner);
-          if (bData.owner == address) {
-            //console.log("pushing...");
-            //console.log(bData.star);
-
-            stars.push(bData.star);
+      stars = self.chain
+        .filter(block => {
+          if (block.height > 0) {
+            let dataMessage = block.getBData();
+            let blockAddress = dataMessage.split(":")[0];
+            if (blockAddress == address) {
+              return dataMessage.split(":")[2];
+            }
           }
-        }
-      });
-      console.log("=============================");
-      console.log(stars.length);
+        })
+        .map(block => {
+          if (block.height > 0) {
+            let dataMessage = block.getBData();
+            let blockAddress = dataMessage.split(":")[0];
+            if (blockAddress == address) {
+              console.log("==>>" + typeof dataMessage);
+              //console.log(JSON.stringify(dataMessage.split(":")[2]));
+              var dMessage = dataMessage.split(":");
+              dMessage.shift();
+              dMessage.shift();
+
+              //   console.log(dMessage);
+              //   var a = dMessage.shift();
+              //   console.log(a);
+              //   var b = a.shift();
+              //   console.log(b);
+              var parsedMessage = dMessage.join(":");
+
+              console.log(JSON.parse(parsedMessage));
+              return JSON.parse(parsedMessage);
+            }
+          }
+        });
+
+      console.log(stars);
       if (stars.length > 0) {
-        console.log("++++" + stars);
+        console.log("+" + stars);
 
         resolve(stars);
       } else {
